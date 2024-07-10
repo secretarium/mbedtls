@@ -223,8 +223,9 @@ foreach(target IN LISTS target_libraries)
     # /library needs to be listed explicitly when building .c files outside
     # of /library (which currently means: under /3rdparty).
     target_include_directories(${target}
-        PUBLIC ${MBEDTLS_DIR}/include/
-        PUBLIC ${thirdparty_inc_public}
+        PUBLIC $<BUILD_INTERFACE:${MBEDTLS_DIR}/include/>
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${thirdparty_inc_public}>
         PRIVATE ${MBEDTLS_DIR}/library/
         PRIVATE ${thirdparty_inc}
         # Needed to include psa_crypto_driver_wrappers.h
@@ -240,7 +241,14 @@ foreach(target IN LISTS target_libraries)
         target_compile_definitions(${target}
             PUBLIC MBEDTLS_USER_CONFIG_FILE="${MBEDTLS_USER_CONFIG_FILE}")
     endif()
+    export(
+        TARGETS ${target}
+        NAMESPACE MbedTLS::
+        FILE ${target}-targets.cmake
+    )
+
     install(TARGETS ${target}
+            EXPORT ${target}
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
             PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 endforeach(target)

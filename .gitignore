@@ -73,3 +73,5 @@ massif-*
 
 # Clangd compilation database
 compile_commands.json
+
+.vscode/
